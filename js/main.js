@@ -1,6 +1,6 @@
 //__AUTHOR__DylanOsborn__
 //making these variables global
-var attrArray = ["Percent below poverty line", "percent completed highschool", "Percent black", "Percent asian", "percent hispanic/latino", "percent white"];
+var attrArray = ["Percent Below Poverty Line", "Percent Completed Highschool", "Percent Black", "Percent Asian", "Percent Hispanic/Latino", "Percent White"];
 var expressed = attrArray[0]; //initial attribute
 (function(){
 //begin script when window loads
@@ -70,7 +70,7 @@ function setMap(){
         var colorScale = makeColorScale(csvData);
         //add enumeration units to the map
         setEnumerationUnits(caliCounties, map, path, colorScale, csvData);
-
+        createDropdown(makeColorScale);
         //add coordinated visualization to the map
         setChart(csvData, colorScale);
       };
@@ -156,9 +156,9 @@ function setEnumerationUnits(caliCounties, map, path, colorScale, csvData){
 //function to create coordinated bar chart
 function setChart(csvData, colorScale){
     //chart frame dimensions
-    var chartWidth = window.innerWidth * 0.45,
+    var chartWidth = window.innerWidth * 0.44,
         chartHeight = 473,
-        leftPadding = 25,
+        leftPadding = 20,
         rightPadding = 2,
         topBottomPadding = 5,
         //i removed these to fit all my data in the graph
@@ -198,7 +198,7 @@ function setChart(csvData, colorScale){
         })
         .attr("width", (chartWidth - leftPadding) / csvData.length - 1) //white space between the bars
         .attr("x", function(d, i){
-            return i * ((chartWidth - leftPadding) / csvData.length) + leftPadding;
+            return i * ((chartWidth - leftPadding) / csvData.length ) + leftPadding;
         })
         .attr("height", function(d, i){
             return 463 - yScale(parseFloat(d[expressed]));
@@ -216,7 +216,7 @@ function setChart(csvData, colorScale){
         .attr("y", 40)
         .attr("class", "chartTitle")
         // brute force for title of attribute (fix me)
-        .text("Percent of Population" + expressed.split("ercent")[1]);
+        .text("Percent of Population" + expressed.split("Percent")[1]);
 
     //create vertical axis generator
     var yAxis = d3.axisLeft()
@@ -231,8 +231,8 @@ function setChart(csvData, colorScale){
     //create frame for chart border
     var chartFrame = chart.append("rect")
         .attr("class", "chartFrame")
-        .attr("width", chartInnerWidth)
-        .attr("height", chartInnerHeight)
+        .attr("width", chartWidth)
+        .attr("height", chartHeight)
         .attr("transform", translate);
 };
 
@@ -288,5 +288,42 @@ function choropleth(props, colorScale){
         return "#CCC";
     };
 };
+//function to create a dropdown menu for attribute selection
+function createDropdown(csvData){
+    //add select element
+    var dropdown = d3.select("body")
+        .append("select")
+        .attr("class", "dropdown")
+        .on("change", function(){
+            changeAttribute(this.value, csvData)
+        });
 
+    //add initial option
+    var titleOption = dropdown.append("option")
+        .attr("class", "titleOption")
+        .attr("disabled", "true")
+        .text("Select Attribute");
+
+    //add attribute name options
+    var attrOptions = dropdown.selectAll("attrOptions")
+        .data(attrArray)
+        .enter()
+        .append("option")
+        .attr("value", function(d){ return d })
+        .text(function(d){ return d });
+};
+//dropdown change listener handler
+function changeAttribute(attribute, csvData){
+    //change the expressed attribute
+    expressed = attribute;
+
+    //recreate the color scale
+    var colorScale = makeColorScale(csvData);
+
+    //recolor enumeration units
+    var counties = d3.selectAll(".counties")
+        .style("fill", function(d){
+            return choropleth(d.properties, colorScale)
+        });
+};
 })(); //last line of main.js
