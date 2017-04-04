@@ -169,7 +169,7 @@ function setChart(csvData, colorScale){
     //create a second svg element to hold the bar chart
     var chart = d3.select("body")
         .append("svg")
-        .attr("width", chartWidth + 11)
+        .attr("width", chartWidth)
         .attr("height", chartHeight)
         .attr("class", "chart");
 
@@ -196,9 +196,9 @@ function setChart(csvData, colorScale){
         .attr("class", function(d){
             return "bars " + d.NAME;
         })
-        .attr("width", chartWidth / csvData.length - 1) //white space between the bars
+        .attr("width", (chartWidth - leftPadding) / csvData.length - 1) //white space between the bars
         .attr("x", function(d, i){
-            return i * (chartWidth / csvData.length) + leftPadding;
+            return i * ((chartWidth - leftPadding) / csvData.length) + leftPadding;
         })
         .attr("height", function(d, i){
             return 463 - yScale(parseFloat(d[expressed]));
@@ -216,7 +216,7 @@ function setChart(csvData, colorScale){
         .attr("y", 40)
         .attr("class", "chartTitle")
         // brute force for title of attribute (fix me)
-        .text("Percent of Population " + expressed[8]+ expressed[9]+ expressed[10]+ expressed[11]+ expressed[12]+ expressed[13]+ expressed[14]+ expressed[15]+ expressed[16]+ expressed[17]+ expressed[18]+ expressed[19]+ expressed[20]+ expressed[21] );
+        .text("Percent of Population" + expressed.split("ercent")[1]);
 
     //create vertical axis generator
     var yAxis = d3.axisLeft()
@@ -239,7 +239,7 @@ function setChart(csvData, colorScale){
 //function to create color scale generator
 function makeColorScale(data){
   //console.log(data);
-    
+
     var colorClasses = [
         "#fee5d9",
         "#fcbba1",
