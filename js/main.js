@@ -3,9 +3,9 @@
 var attrArray = ["Percent Below Poverty Line", "Percent Completed High School", "Percent Black", "Percent Asian", "Percent Hispanic/Latino", "Percent White"];
 var expressed = attrArray[0]; //initial attribute
 (function(){
-var chartWidth = window.innerWidth * 0.44,
+var chartWidth = window.innerWidth * 0.445,
     chartHeight = 473,
-    leftPadding = 20,
+    leftPadding = 24,
     rightPadding = 2,
     topBottomPadding = 5,
     //i removed these to fit all my data in the graph
@@ -28,7 +28,7 @@ function setMap(){
 
 
     //map frame dimensions
-    var width = window.innerWidth * 0.5,
+    var width = window.innerWidth * 0.48,
         height = 550;
     //map frame dimensions
     // var width = 960,
@@ -186,7 +186,7 @@ function setChart(csvData, colorScale){
     //create a second svg element to hold the bar chart
     var chart = d3.select("body")
         .append("svg")
-        .attr("width", chartWidth)
+        .attr("width", chartWidth * 1.05)
         .attr("height", chartHeight)
         .attr("class", "chart");
 
@@ -225,7 +225,7 @@ function setChart(csvData, colorScale){
         .attr("x", 40)
         .attr("y", 40)
         .attr("class", "chartTitle")
-        // brute force for title of attribute (fix me)
+        // adds title
         .text("Percent of Population" + expressed.split("Percent")[1]);
 
     //create vertical axis generator
@@ -385,10 +385,12 @@ function updateChart(bars, n, colorScale){
 
 //function to highlight enumeration units and bars
 function highlight(props){
+
       //change stroke
       var selected = d3.selectAll("." + props.NAME.replace(/ /g,"_"))//replace space with "_"
         .style("stroke", "blue")//stroke of highlight
         .style("stroke-width", "2");
+        setLabel(props)//calling setLabel and pass props to to allow the label to appear when highlight on the county
 };//function to dehighlight enumeration units and bars
 function dehighlight(props){
       var selected = d3.selectAll("." + props.NAME.replace(/ /g,"_"))
@@ -418,7 +420,7 @@ function dehighlight(props){
 function setLabel(props){
     //label content
     var labelAttribute = "<h1>" + props[expressed] + //for selected attribute value
-        "</h1><b>" + expressed.split("Percent")[1] + "</b>";
+        "%</h1><b>" + expressed.split("Percent")[1] + "</b>";
 
     //create info label div
     var infolabel = d3.select("body")//create actual label
